@@ -14,7 +14,6 @@ public class ProductRequest {
 
     private UUID categoryId;
 
-    @Column
     private String description;
 
     @NotNull(message = "Harga wajib diisi")

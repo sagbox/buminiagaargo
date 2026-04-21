@@ -24,8 +24,8 @@ spring:
 
 aws:
   region: ${AWS_REGION:ap-southeast-1}
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
+  access-key: ${AWS_ACCESS_KEY:your-aws-access-key}
+  secret-key: ${AWS_SECRET_KEY:your-aws-secret-key}
   s3:
     bucket: ${AWS_S3_BUCKET:buminiagaagrochem-assets}
   cloudfront:
