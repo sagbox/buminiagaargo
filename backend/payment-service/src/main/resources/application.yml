@@ -19,8 +19,8 @@ spring:
         default_schema: payment_schema
 
 midtrans:
-  server-key: ${MIDTRANS_SERVER_KEY}
-  client-key: ${MIDTRANS_CLIENT_KEY}
+  server-key: ${MIDTRANS_SERVER_KEY:Mid-client-GP0MFlVI01Kpw2Kx}
+  client-key: ${MIDTRANS_CLIENT_KEY:Mid-server-GZOmjQPPaz5wN6yknmSjB1Ic}
   production: ${MIDTRANS_PRODUCTION:false}
 
 services:
