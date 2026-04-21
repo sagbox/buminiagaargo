@@ -1,0 +1,103 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - ${ALLOWED_ORIGIN:http://localhost:5173}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+            maxAge: 3600
+      routes:
+        # --- AUTH (public, no JWT required) ---
+        - id: auth-routes
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/**
+
+        # --- USER (JWT required) ---
+        - id: user-routes
+          uri: ${USER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - name: JwtAuthFilter
+
+        # --- PRODUCTS public (no JWT) ---
+        - id: product-public-routes
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/products/**
+            - Method=GET
+
+        # --- PRODUCTS admin (JWT + ADMIN role) ---
+        - id: product-admin-routes
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/admin/products/**,/api/admin/categories/**
+          filters:
+            - name: JwtAuthFilter
+              args:
+                requiredRole: ADMIN
+
+        # --- CATEGORIES public (no JWT) ---
+        - id: category-public-routes
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/categories/**
+            - Method=GET
+
+        # --- ORDERS buyer (JWT required) ---
+        - id: order-buyer-routes
+          uri: ${ORDER_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - name: JwtAuthFilter
+
+        # --- ORDERS admin (JWT + ADMIN role) ---
+        - id: order-admin-routes
+          uri: ${ORDER_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/admin/orders/**,/api/admin/dashboard/**
+          filters:
+            - name: JwtAuthFilter
+              args:
+                requiredRole: ADMIN
+
+        # --- PAYMENTS buyer (JWT required) ---
+        - id: payment-buyer-routes
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - name: JwtAuthFilter
+
+        # --- MIDTRANS WEBHOOK (no JWT, Midtrans sends this) ---
+        - id: payment-webhook-route
+          uri: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/payments/webhook
+            - Method=POST
+
+jwt:
+  secret: ${JWT_SECRET:buminiaga-secret-key-must-be-at-least-32-chars!!}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

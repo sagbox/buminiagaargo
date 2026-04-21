@@ -1,0 +1,43 @@
+---
+# ClusterIssuer: Let's Encrypt production certificate
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@buminiagaagrochem.id
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+      - http01:
+          ingress:
+            class: traefik
+---
+# Ingress: route api.buminiagaagrochem.id -> api-gateway
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: buminiaga-ingress
+  namespace: buminiaga
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: buminiaga-redirect-https@kubernetescrd
+spec:
+  tls:
+    - hosts:
+        - api.buminiagaagrochem.id
+      secretName: buminiaga-tls
+  rules:
+    - host: api.buminiagaagrochem.id
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080

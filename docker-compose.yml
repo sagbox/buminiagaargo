@@ -1,0 +1,100 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: buminiaga-postgres
+    environment:
+      POSTGRES_DB: buminiaga
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/scripts/db-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d buminiaga"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+    container_name: buminiaga-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-buminiaga-super-secret-key-min-32-chars!!}
+      USER_SERVICE_URL: http://user-service:8081
+      PRODUCT_SERVICE_URL: http://product-service:8082
+      ORDER_SERVICE_URL: http://order-service:8083
+      PAYMENT_SERVICE_URL: http://payment-service:8084
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:5173}
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+      - payment-service
+
+  user-service:
+    build:
+      context: ./backend/user-service
+    container_name: buminiaga-user
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/buminiaga?currentSchema=user_schema
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET:-buminiaga-super-secret-key-min-32-chars!!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  product-service:
+    build:
+      context: ./backend/product-service
+    container_name: buminiaga-product
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/buminiaga?currentSchema=product_schema
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY:-localdev}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY:-localdev}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-buminiagaagrochem-assets}
+      AWS_CLOUDFRONT_URL: ${AWS_CLOUDFRONT_URL:-https://placeholder.cloudfront.net}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  order-service:
+    build:
+      context: ./backend/order-service
+    container_name: buminiaga-order
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/buminiaga?currentSchema=order_schema
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PRODUCT_SERVICE_URL: http://product-service:8082
+    depends_on:
+      postgres:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+
+  payment-service:
+    build:
+      context: ./backend/payment-service
+    container_name: buminiaga-payment
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/buminiaga?currentSchema=payment_schema
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      MIDTRANS_SERVER_KEY: ${MIDTRANS_SERVER_KEY:-SB-Mid-server-xxx}
+      MIDTRANS_CLIENT_KEY: ${MIDTRANS_CLIENT_KEY:-SB-Mid-client-xxx}
+      MIDTRANS_PRODUCTION: ${MIDTRANS_PRODUCTION:-false}
+      ORDER_SERVICE_URL: http://order-service:8083
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

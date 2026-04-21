@@ -1,0 +1,17 @@
+aku mau buat project website "Bumi Niaga Agrochem". Itu nama perusahaannya.
+buatkan website sampai bisa diakses online. Kita buat MVP biar aku benar-benar paham.
+Lalu improve secara berkala. Aplikasi ini menjual produk pertanian ke petani.
+Aplikasi ini memiliki fungsi:
+1. bisa daftar user dan login
+2. untuk akses admin bisa tambah produk ke katalog penjualan.
+3. setiap produk ditampilkan pada dengan nama, deskripsi, harga, gambar.
+4. semua konten ditambahkan data CMS.
+5. untuk user pembeli tidak perlu login. Namun ketika ingin membeli dia harus register/login
+6. produk bisa dibeli secara online.
+7. data pembelian tercatat secara rinci, bisa dilihat di dashboard produk yang diakses oleh admin
+System Design aplikasi ini:
+1. Arsitektur Microservices
+2. Database postgreSQL
+3. BE use Java Spring Boot, FE use React
+4. payment gateway pilihkan yang teraman dan gratis aja
+5. deployment menggunakan kubernetes kalau bisa, untuk cloud service nya aku ada Free tier AWS

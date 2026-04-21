@@ -1,0 +1,38 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/buminiaga?currentSchema=product_schema}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: product_schema
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+aws:
+  region: ${AWS_REGION:ap-southeast-1}
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  s3:
+    bucket: ${AWS_S3_BUCKET:buminiagaagrochem-assets}
+  cloudfront:
+    url: ${AWS_CLOUDFRONT_URL:https://your-distribution.cloudfront.net}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
