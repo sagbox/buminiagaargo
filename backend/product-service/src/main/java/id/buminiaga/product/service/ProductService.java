@@ -28,7 +28,7 @@ public class ProductService {
     private final S3ImageService s3ImageService;
 
     public Page<ProductResponse> getPublicProducts(UUID categoryId, String search, Pageable pageable) {
-        return productRepository.findAllPublic(categoryId, search, pageable).map(this::toResponse);
+        return productRepository.findAllPublic(categoryId, nullSafe(search), pageable).map(this::toResponse);
     }
 
     public ProductResponse getPublicProduct(String slug) {
@@ -38,7 +38,11 @@ public class ProductService {
     }
 
     public Page<ProductResponse> getAdminProducts(String search, Pageable pageable) {
-        return productRepository.findAllForAdmin(search, pageable).map(this::toResponse);
+        return productRepository.findAllForAdmin(nullSafe(search), pageable).map(this::toResponse);
+    }
+
+    private String nullSafe(String s) {
+        return s == null ? "" : s.trim();
     }
 
     @Transactional

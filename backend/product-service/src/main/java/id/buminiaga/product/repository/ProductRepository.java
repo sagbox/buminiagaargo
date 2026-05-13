@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
         WHERE p.isDeleted = false
           AND p.isActive = true
           AND (:categoryId IS NULL OR p.category.id = :categoryId)
-          AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
         """)
     Page<Product> findAllPublic(
             @Param("categoryId") UUID categoryId,
@@ -30,7 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("""
         SELECT p FROM Product p
         WHERE p.isDeleted = false
-          AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))
         """)
     Page<Product> findAllForAdmin(
             @Param("search") String search,
