@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY target/*.jar app.jar
 
-ENV JAVA_OPTS="-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+ENV JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m"
 
 EXPOSE 8080
 
