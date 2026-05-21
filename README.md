@@ -40,7 +40,7 @@ buminiagaargo/
 ### 1. Setup environment variables
 
 ```bash
-cp .env.example .env
+cp .env.production.example .env
 # Edit .env dengan nilai yang sesuai
 ```
 
@@ -56,14 +56,6 @@ cd backend/user-service && mvn spring-boot:run
 ```
 
 ### 3. Jalankan frontend
-
-```bash
-cp frontend/.env.example frontend/.env
-cd frontend
-npm install
-npm run dev
-# Buka http://localhost:5173
-```
 
 ### 4. Inisialisasi database
 

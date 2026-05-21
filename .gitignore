@@ -17,7 +17,6 @@ infrastructure/k8s/secrets/*.yaml
 !infrastructure/k8s/secrets/*.yaml.example
 .env
 .env.*
-!.env.example
 !.env.production.example
 
 # IntelliJ IDEA

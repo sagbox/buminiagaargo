@@ -2,139 +2,142 @@ services:
   nginx:
     image: nginx:alpine
     container_name: buminiaga-nginx
+
     ports:
       - "80:80"
+
     volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro
       - ./infrastructure/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
     depends_on:
       api-gateway:
         condition: service_healthy
+
     restart: unless-stopped
-    mem_limit: 64m
+
+    mem_limit: 32m
+    cpus: 0.25
+
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
     networks:
       - buminiaga
 
   api-gateway:
     build:
       context: ./backend/api-gateway
+
     container_name: buminiaga-gateway
+
     environment:
-      JAVA_OPTS: "-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+
       JWT_SECRET: ${JWT_SECRET}
+
       USER_SERVICE_URL: http://user-service:8081
       PRODUCT_SERVICE_URL: http://product-service:8082
-      ORDER_SERVICE_URL: http://order-service:8083
-      PAYMENT_SERVICE_URL: http://payment-service:8084
+
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+
     depends_on:
       user-service:
         condition: service_healthy
+
       product-service:
         condition: service_healthy
-      order-service:
-        condition: service_healthy
-      payment-service:
-        condition: service_healthy
+
     restart: unless-stopped
-    mem_limit: 300m
+
+    mem_limit: 180m
+    cpus: 0.50
+
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 2
+      start_period: 90s
+
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
     networks:
       - buminiaga
 
   user-service:
     build:
       context: ./backend/user-service
+
     container_name: buminiaga-user
+
     environment:
-      JAVA_OPTS: "-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+
       DB_URL: ${DB_URL_USER}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+
       JWT_SECRET: ${JWT_SECRET}
+
     restart: unless-stopped
-    mem_limit: 300m
+
+    mem_limit: 220m
+    cpus: 0.50
+
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 2
+      start_period: 90s
+
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
     networks:
       - buminiaga
 
   product-service:
     build:
       context: ./backend/product-service
+
     container_name: buminiaga-product
+
     environment:
-      JAVA_OPTS: "-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+
       DB_URL: ${DB_URL_PRODUCT}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       AWS_CLOUDFRONT_URL: ${AWS_CLOUDFRONT_URL}
       AWS_REGION: ${AWS_REGION}
-    restart: unless-stopped
-    mem_limit: 300m
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8082/actuator/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    networks:
-      - buminiaga
 
-  order-service:
-    build:
-      context: ./backend/order-service
-    container_name: buminiaga-order
-    environment:
-      JAVA_OPTS: "-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
-      DB_URL: ${DB_URL_ORDER}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      PRODUCT_SERVICE_URL: http://product-service:8082
     restart: unless-stopped
-    mem_limit: 300m
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8083/actuator/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    networks:
-      - buminiaga
 
-  payment-service:
-    build:
-      context: ./backend/payment-service
-    container_name: buminiaga-payment
-    environment:
-      JAVA_OPTS: "-Xmx128m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
-      DB_URL: ${DB_URL_PAYMENT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      MIDTRANS_SERVER_KEY: ${MIDTRANS_SERVER_KEY}
-      MIDTRANS_CLIENT_KEY: ${MIDTRANS_CLIENT_KEY}
-      MIDTRANS_PRODUCTION: ${MIDTRANS_PRODUCTION}
-      ORDER_SERVICE_URL: http://order-service:8083
-    restart: unless-stopped
-    mem_limit: 300m
+    mem_limit: 220m
+    cpus: 0.50
+
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8084/actuator/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 60s
+      timeout: 3s
+      retries: 2
+      start_period: 90s
+
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
     networks:
       - buminiaga
 
