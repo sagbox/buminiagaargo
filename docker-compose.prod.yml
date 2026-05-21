@@ -33,7 +33,7 @@ services:
     container_name: buminiaga-gateway
 
     environment:
-      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=192m"
 
       JWT_SECRET: ${JWT_SECRET}
 
@@ -76,7 +76,7 @@ services:
     container_name: buminiaga-user
 
     environment:
-      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx192m -XX:+UseSerialGC -XX:MaxMetaspaceSize=256m"
 
       DB_URL: ${DB_URL_USER}
       DB_USER: ${DB_USER}
@@ -111,7 +111,7 @@ services:
     container_name: buminiaga-product
 
     environment:
-      JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=64m"
+      JAVA_OPTS: "-Xms64m -Xmx256m -XX:+UseSerialGC -XX:MaxMetaspaceSize=256m"
 
       DB_URL: ${DB_URL_PRODUCT}
       DB_USER: ${DB_USER}
