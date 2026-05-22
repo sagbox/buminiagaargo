@@ -41,7 +41,7 @@ spring:
         - id: product-public-routes
           uri: ${PRODUCT_SERVICE_URL:http://localhost:8082}
           predicates:
-            - Path=/api/products/**
+            - Path=/api/products,/api/products/**
 
         # --- PRODUCTS admin (JWT + ADMIN role) ---
         - id: product-admin-routes
@@ -57,7 +57,7 @@ spring:
         - id: category-public-routes
           uri: ${PRODUCT_SERVICE_URL:http://localhost:8082}
           predicates:
-            - Path=/api/categories/**
+            - Path=/api/categories,/api/categories/**
 
         # --- ORDERS buyer (JWT required) ---
         - id: order-buyer-routes
