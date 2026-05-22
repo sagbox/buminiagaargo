@@ -9,8 +9,8 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins:
-              - "https://dea5uygxt34p9.cloudfront.net"
+            allowedOriginPatterns:
+              - "*"
             allowedMethods:
               - GET
               - POST
