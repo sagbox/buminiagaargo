@@ -9,16 +9,15 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOriginPatterns:
-              - "*"
+            allowedOrigins:
+              - "https://dea5uygxt34p9.cloudfront.net"
             allowedMethods:
               - GET
               - POST
               - PUT
               - DELETE
               - OPTIONS
-            allowedHeaders:
-              - "*"
+            allowedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
       routes:
