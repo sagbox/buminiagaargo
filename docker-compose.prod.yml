@@ -30,8 +30,6 @@ services:
     build:
       context: ./backend/api-gateway
 
-    container_name: buminiaga-gateway
-
     environment:
       JAVA_OPTS: "-Xms64m -Xmx128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=192m"
 
@@ -73,8 +71,6 @@ services:
     build:
       context: ./backend/user-service
 
-    container_name: buminiaga-user
-
     environment:
       JAVA_OPTS: "-Xms64m -Xmx192m -XX:+UseSerialGC -XX:MaxMetaspaceSize=256m"
 
@@ -107,8 +103,6 @@ services:
   product-service:
     build:
       context: ./backend/product-service
-
-    container_name: buminiaga-product
 
     environment:
       JAVA_OPTS: "-Xms64m -Xmx256m -XX:+UseSerialGC -XX:MaxMetaspaceSize=256m"
