@@ -7,18 +7,20 @@ spring:
   cloud:
     gateway:
       globalcors:
+        add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
-            allowedOriginPatterns:
-              - "*"
+            allowedOrigins:
+              - "https://dea5uygxt34p9.cloudfront.net"
             allowedMethods:
               - GET
               - POST
               - PUT
               - DELETE
               - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: true
+            allowedHeaders:
+              - "*"
+            allowCredentials: false
             maxAge: 3600
       routes:
         # --- AUTH (public, no JWT required) ---
